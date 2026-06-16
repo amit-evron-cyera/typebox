@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Pointer } from '../pointer/index.ts'
+import { Pointer } from 'typebox/value'
 import { type TMutable } from './mutate.ts'
 
 export function FromUnknown(root: TMutable, path: string, current: unknown, next: unknown): void {

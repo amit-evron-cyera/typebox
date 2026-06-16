@@ -23,7 +23,6 @@ export async function Metrics() {
     'task/metrics/value_convert.ts',
     'task/metrics/value_create.ts',
     'task/metrics/value_hash.ts',
-    'task/metrics/value_mutate.ts',
     'task/metrics/value_pointer.ts',
     'task/metrics/value_repair.ts',
   ])

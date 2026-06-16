@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
+import { Guard } from 'typebox/guard'
 
 import { type TMutable } from './mutate.ts'
 import { FromArray } from './from_array.ts'

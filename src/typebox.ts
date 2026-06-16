@@ -62,12 +62,12 @@ export { Omit, type TOmit, type TOmitDeferred } from './type/action/omit.ts'
 export { Parameters, type TParameters, type TParametersDeferred } from './type/action/parameters.ts'
 export { Partial, type TPartial, type TPartialDeferred } from './type/action/partial.ts'
 export { Pick, type TPick, type TPickDeferred } from './type/action/pick.ts'
-export { ReadonlyObject, ReadonlyType, type TReadonlyObject, type TReadonlyObjectDeferred } from './type/action/readonly_object.ts'
+export { ReadonlyObject, type TReadonlyObject, type TReadonlyObjectDeferred } from './type/action/readonly_object.ts'
 export { Required, type TRequired, type TRequiredDeferred } from './type/action/required.ts'
 export { ReturnType, type TReturnType, type TReturnTypeDeferred } from './type/action/return_type.ts'
 export { type TUncapitalize, type TUncapitalizeDeferred, Uncapitalize } from './type/action/uncapitalize.ts'
 export { type TUppercase, type TUppercaseDeferred, Uppercase } from './type/action/uppercase.ts'
-export { Options, type TOptions, type TWith, With } from './type/action/with.ts'
+export { type TWith, With } from './type/action/with.ts'
 
 // ------------------------------------------------------------------
 // Extension

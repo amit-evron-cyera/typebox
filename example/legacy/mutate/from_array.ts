@@ -28,43 +28,20 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
-import { Pointer } from '../pointer/index.ts'
-import { Clone } from '../clone/index.ts'
+import { Guard } from 'typebox/guard'
+import { Clone } from 'typebox/value'
+import { Pointer } from 'typebox/value'
 
 import { type TMutable } from './mutate.ts'
 import { FromValue } from './from_value.ts'
 
-// ------------------------------------------------------------------
-// AssertKey
-// ------------------------------------------------------------------
-function AssertKey(key: string): void {
-  if(Guard.IsUnsafePropertyKey(key)) throw Error('Attempted to Mutate with unsafe property key')
-}
-// ------------------------------------------------------------------
-// AssertKey
-// ------------------------------------------------------------------
-export function FromObject(root: TMutable, path: string, current: unknown, next: Record<string, unknown>): void {
-  if (!Guard.IsObjectNotArray(current)) {
+export function FromArray(root: TMutable, path: string, current: unknown, next: unknown[]): void {
+  if (!Guard.IsArray(current)) {
     Pointer.Set(root, path, Clone(next))
   } else {
-    const currentKeys = Guard.Keys(current)
-    const nextKeys = Guard.Keys(next)
-    for (const currentKey of currentKeys) {
-      AssertKey(currentKey)
-      if (!nextKeys.includes(currentKey)) {
-        delete current[currentKey]
-      }
+    for (let index = 0; index < next.length; index++) {
+      FromValue(root, `${path}/${index}`, current[index], next[index])
     }
-    for (const nextKey of nextKeys) {
-      AssertKey(nextKey)
-      if (!currentKeys.includes(nextKey)) {
-        current[nextKey] = next[nextKey]
-      }
-    }
-    for (const nextKey of nextKeys) {
-      AssertKey(nextKey)
-      FromValue(root, `${path}/${nextKey}`, current[nextKey], next[nextKey])
-    }
+    current.splice(next.length)
   }
 }
