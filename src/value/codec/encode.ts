@@ -62,7 +62,7 @@ function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
 /** Executes Encode callbacks only */
 export function EncodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
   const sorted = Settings.Get().unionPrioritySort ? UnionPrioritySort(type) : type
-  return FromType('Encode', context, sorted, value)
+  return FromType('Encode', context, sorted, value, new Map())
 }
 // ------------------------------------------------------------------
 // Encoder

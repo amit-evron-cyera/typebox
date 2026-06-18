@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { type TObject, type TProperties } from '../../type/index.ts'
-import { FromType } from './from_type.ts'
+import { FromType, type CodecMemo } from './from_type.ts'
 import { Callback } from './callback.ts'
 
 import { IsOptionalUndefined } from '../shared/optional_undefined.ts'
@@ -38,27 +38,27 @@ import { IsOptionalUndefined } from '../shared/optional_undefined.ts'
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
-function Decode(direction: string, context: TProperties, type: TObject, value: unknown): unknown {
+function Decode(direction: string, context: TProperties, type: TObject, value: unknown, memo: CodecMemo): unknown {
   if (!Guard.IsObjectNotArray(value)) return value
   
   for (const key of Guard.Keys(type.properties)) {
     // Ignore for non-present or optional-undefined
     if(!Guard.HasPropertyKey(value, key) || IsOptionalUndefined(type.properties[key], key, value)) continue
-    value[key] = FromType(direction, context, type.properties[key], value[key])
+    value[key] = FromType(direction, context, type.properties[key], value[key], memo)
   }
   return Callback(direction, context, type, value)
 }
 // ------------------------------------------------------------------
 // Encode
 // ------------------------------------------------------------------
-function Encode(direction: string, context: TProperties, type: TObject, value: unknown): unknown {
+function Encode(direction: string, context: TProperties, type: TObject, value: unknown, memo: CodecMemo): unknown {
   const exterior = Callback(direction, context, type, value)
   if (!Guard.IsObjectNotArray(exterior)) return exterior
 
   for (const key of Guard.Keys(type.properties)) {
     // Ignore for non-present or optional-undefined
     if(!Guard.HasPropertyKey(exterior, key) || IsOptionalUndefined(type.properties[key], key, exterior)) continue
-    exterior[key] = FromType(direction, context, type.properties[key], exterior[key])
+    exterior[key] = FromType(direction, context, type.properties[key], exterior[key], memo)
   }
   return exterior
 }
@@ -66,8 +66,8 @@ function Encode(direction: string, context: TProperties, type: TObject, value: u
 // ------------------------------------------------------------------
 // FromObject
 // ------------------------------------------------------------------
-export function FromObject(direction: string, context: TProperties, type: TObject, value: unknown): unknown {
+export function FromObject(direction: string, context: TProperties, type: TObject, value: unknown, memo: CodecMemo): unknown {
   return Guard.IsEqual(direction, 'Decode')
-    ? Decode(direction, context, type, value)
-    : Encode(direction, context, type, value)
+    ? Decode(direction, context, type, value, memo)
+    : Encode(direction, context, type, value, memo)
 }

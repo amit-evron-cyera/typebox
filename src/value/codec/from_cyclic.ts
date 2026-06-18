@@ -29,10 +29,10 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TProperties, type TCyclic, Ref } from '../../type/index.ts'
-import { FromType } from './from_type.ts'
+import { FromType, type CodecMemo } from './from_type.ts'
 import { Callback } from './callback.ts'
 
-export function FromCyclic(direction: string, context: TProperties, type: TCyclic, value: unknown): unknown {
-  value = FromType(direction, {... context, ...type.$defs }, Ref(type.$ref), value)
+export function FromCyclic(direction: string, context: TProperties, type: TCyclic, value: unknown, memo: CodecMemo): unknown {
+  value = FromType(direction, {... context, ...type.$defs }, Ref(type.$ref), value, memo)
   return Callback(direction, context, type, value)
 }

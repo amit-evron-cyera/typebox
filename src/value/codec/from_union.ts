@@ -31,17 +31,17 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 import { type TProperties, type TUnion } from '../../type/index.ts'
 import { Callback } from './callback.ts'
-import { FromType } from './from_type.ts'
+import { FromType, type CodecMemo } from './from_type.ts'
 import { Clone } from '../clone/index.ts'
 import { Check } from '../check/index.ts'
 
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
-function Decode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
+function Decode(direction: string, context: TProperties, type: TUnion, value: unknown, memo: CodecMemo): unknown {
   for (const schema of type.anyOf) {
     if(!Check(context, schema, value)) continue
-    const variant = FromType(direction, context, schema, value)
+    const variant = FromType(direction, context, schema, value, memo)
     return Callback(direction, context, type, variant)
   }
   return value
@@ -49,10 +49,10 @@ function Decode(direction: string, context: TProperties, type: TUnion, value: un
 // ------------------------------------------------------------------
 // Encode
 // ------------------------------------------------------------------
-function Encode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
+function Encode(direction: string, context: TProperties, type: TUnion, value: unknown, memo: CodecMemo): unknown {
   const exterior = Callback(direction, context, type, value)
   for (const schema of type.anyOf) {
-    const variant = FromType(direction, context, schema, Clone(exterior))
+    const variant = FromType(direction, context, schema, Clone(exterior), memo)
     if(!Check(context, schema, variant)) continue
     return variant
   }
@@ -61,8 +61,8 @@ function Encode(direction: string, context: TProperties, type: TUnion, value: un
 // ------------------------------------------------------------------
 // FromUnion
 // ------------------------------------------------------------------
-export function FromUnion(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
+export function FromUnion(direction: string, context: TProperties, type: TUnion, value: unknown, memo: CodecMemo): unknown {
   return Guard.IsEqual(direction, 'Decode')
-    ? Decode(direction, context, type, value)
-    : Encode(direction, context, type, value)
+    ? Decode(direction, context, type, value, memo)
+    : Encode(direction, context, type, value, memo)
 }

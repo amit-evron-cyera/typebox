@@ -30,40 +30,40 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { RecordPattern, RecordValue, type TProperties, type TRecord } from '../../type/index.ts'
-import { FromType } from './from_type.ts'
+import { FromType, type CodecMemo } from './from_type.ts'
 import { Callback } from './callback.ts'
 
 
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
-function Decode(direction: string, context: TProperties, type: TRecord, value: unknown): unknown {
+function Decode(direction: string, context: TProperties, type: TRecord, value: unknown, memo: CodecMemo): unknown {
   if (!Guard.IsObjectNotArray(value)) return value
   const regexp = new RegExp(RecordPattern(type))
   for (const key of Guard.Keys(value)) {
     if (!regexp.test(key)) continue
 
-    value[key] = FromType(direction, context, RecordValue(type), value[key])
+    value[key] = FromType(direction, context, RecordValue(type), value[key], memo)
   }
   return Callback(direction, context, type, value)
 }
 // ------------------------------------------------------------------
 // Encode
 // ------------------------------------------------------------------
-function Encode(direction: string, context: TProperties, type: TRecord, value: unknown): unknown {
+function Encode(direction: string, context: TProperties, type: TRecord, value: unknown, memo: CodecMemo): unknown {
   const exterior = Callback(direction, context, type, value)
   if (!Guard.IsObjectNotArray(exterior)) return exterior
   
   const regexp = new RegExp(RecordPattern(type))
   for (const key of Guard.Keys(exterior)) {
     if (!regexp.test(key)) continue
-    exterior[key] = FromType(direction, context, RecordValue(type), exterior[key])
+    exterior[key] = FromType(direction, context, RecordValue(type), exterior[key], memo)
   }
   return exterior
 }
 
-export function FromRecord(direction: string, context: TProperties, type: TRecord, value: unknown): unknown {
+export function FromRecord(direction: string, context: TProperties, type: TRecord, value: unknown, memo: CodecMemo): unknown {
   return Guard.IsEqual(direction, 'Decode')
-    ? Decode(direction, context, type, value)
-    : Encode(direction, context, type, value)
+    ? Decode(direction, context, type, value, memo)
+    : Encode(direction, context, type, value, memo)
 }

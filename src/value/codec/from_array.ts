@@ -30,29 +30,29 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { type TArray, type TProperties } from '../../type/index.ts'
-import { FromType } from './from_type.ts'
+import { FromType, type CodecMemo } from './from_type.ts'
 import { Callback } from './callback.ts'
 
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
-function Decode(direction: string, context: TProperties, type: TArray, value: unknown): unknown {
+function Decode(direction: string, context: TProperties, type: TArray, value: unknown, memo: CodecMemo): unknown {
   if(!Guard.IsArray(value)) return value
 
   for(let i = 0; i < value.length; i++) {
-    value[i] = FromType(direction, context, type.items, value[i])
+    value[i] = FromType(direction, context, type.items, value[i], memo)
   }
   return Callback(direction, context, type, value)
 }
 // ------------------------------------------------------------------
 // Encode
 // ------------------------------------------------------------------
-function Encode(direction: string, context: TProperties, type: TArray, value: unknown): unknown {
+function Encode(direction: string, context: TProperties, type: TArray, value: unknown, memo: CodecMemo): unknown {
   const exterior = Callback(direction, context, type, value)
   if(!Guard.IsArray(exterior)) return exterior
 
   for(let i = 0; i < exterior.length; i++) {
-    exterior[i] = FromType(direction, context, type.items, exterior[i])
+    exterior[i] = FromType(direction, context, type.items, exterior[i], memo)
   }
   return exterior
 }
@@ -60,8 +60,8 @@ function Encode(direction: string, context: TProperties, type: TArray, value: un
 // ------------------------------------------------------------------
 // FromArray
 // ------------------------------------------------------------------
-export function FromArray(direction: string, context: TProperties, type: TArray, value: unknown): unknown {
+export function FromArray(direction: string, context: TProperties, type: TArray, value: unknown, memo: CodecMemo): unknown {
   return Guard.IsEqual(direction, 'Decode')
-    ? Decode(direction, context, type, value)
-    : Encode(direction, context, type, value)
+    ? Decode(direction, context, type, value, memo)
+    : Encode(direction, context, type, value, memo)
 }

@@ -30,15 +30,15 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { type TProperties, type TRef } from '../../type/index.ts'
-import { FromType } from './from_type.ts'
+import { FromType, type CodecMemo } from './from_type.ts'
 import { Callback } from './callback.ts'
 
 // ------------------------------------------------------------------
 // ResolveRef
 // ------------------------------------------------------------------
-function ResolveRef(direction: string, context: TProperties, type: TRef, value: unknown): unknown {
+function ResolveRef(direction: string, context: TProperties, type: TRef, value: unknown, memo: CodecMemo): unknown {
   return Guard.HasPropertyKey(context, type.$ref)
-    ? FromType(direction, context, context[type.$ref], value)
+    ? FromType(direction, context, context[type.$ref], value, memo)
     : value
 }
 // ------------------------------------------------------------------
@@ -55,8 +55,8 @@ function ResolveRef(direction: string, context: TProperties, type: TRef, value: 
 //   encoded value -> Callback -> resolve $ref -> wire value
 //
 // ------------------------------------------------------------------
-export function FromRef(direction: string, context: TProperties, type: TRef, value: unknown): unknown {
+export function FromRef(direction: string, context: TProperties, type: TRef, value: unknown, memo: CodecMemo): unknown {
   return Guard.IsEqual(direction, 'Decode')
-    ? Callback(direction, context, type, ResolveRef(direction, context, type, value))
-    : ResolveRef(direction, context, type, Callback(direction, context, type, value))
+    ? Callback(direction, context, type, ResolveRef(direction, context, type, value, memo))
+    : ResolveRef(direction, context, type, Callback(direction, context, type, value), memo)
 }

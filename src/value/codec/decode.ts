@@ -62,7 +62,7 @@ function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
 /** Executes Decode callbacks only */
 export function DecodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
   const sorted = Settings.Get().unionPrioritySort ? UnionPrioritySort(type) : type
-  return FromType('Decode', context, sorted, value)
+  return FromType('Decode', context, sorted, value, new Map())
 }
 // ------------------------------------------------------------------
 // Decoder
